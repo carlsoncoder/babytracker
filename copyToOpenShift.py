@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Created by Justin Carlson - 2015-May-16
+# Created by Justin Carlson - 2015-Jul-27
 
 import os
 import sys
@@ -21,7 +21,7 @@ class MyFileInfo:
         return self.relativePath + self.fileName
 
 
-special_directories = ['/Users/carlson/Documents/_source/MEAN/budgettracker/config', '/Users/carlson/Documents/_source/OpenShift/budgettracker/config']
+special_directories = ['/Users/carlson/Documents/_source/MEAN/babytracker/config', '/Users/carlson/Documents/_source/OpenShift/hannahbabytracker/config']
 ignored_directories = ['.git', '.idea', 'node_modules', 'uploads', '.openshift']
 ignored_files = ['.DS_Store', 'copyToOpenShift.py', 'LICENSE', '.gitignore', '.jshintignore', 'gulpfile.js', 'deplist.txt', '__TODO__']
 
@@ -75,10 +75,10 @@ def copyFilesToTarget(targetDirectory):
             os.remove(targetFileTimes[targetFileKey].fullPath)
 
 try:
-    openShiftDirectory = '/Users/carlson/Documents/_source/OpenShift/budgettracker'
+    openShiftDirectory = '/Users/carlson/Documents/_source/OpenShift/hannahbabytracker'
     copyFilesToTarget(openShiftDirectory)
     print 'All files copied successfully - to deploy, you still need to do the following to actually deploy the changes to OpenShift:'
-    print '     1)  cd into the target directory: cd', openShiftDirectory
+    print '     1)  cd into the target directory: cd ', openShiftDirectory
     print '     2)  Run the \'git add .\' command'
     print '     2)  Run the \'git commit -a -m "Message For Commit"\' command'
     print '     2)  Run the \'git push\' command'
