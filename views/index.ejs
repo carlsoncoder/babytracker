@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Baby Tracker</title>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="keywords" content="Carlson, Baby, BabyTracker, Tracker, Baby, Diaper, Diapers, Feeding" />
+        <meta name="description" content="Baby Details Tracker Website" />
+
+        <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-theme.min.css" />
+        <link rel="stylesheet" type="text/css" href="bower_components/angular-tablesort/tablesort.css" />
+        <link rel="stylesheet" type="text/css" href="bower_components/toastr/toastr.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/babytracker.css" />
+
+        <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+        <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+        <script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+        <script type="text/javascript" src="bower_components/angular-tablesort/js/angular-tablesort.js"></script>
+        <script type="text/javascript" src="bower_components/toastr/toastr.min.js"></script>
+
+        <!-- AngularJS -->
+        <script type="text/javascript" src="js/babytracker-scripts.js"></script>
+        <script type="text/javascript" src="js/babytracker-angularApp.js"></script>
+        <script type="text/javascript" src="js/babytracker-controllers.js"></script>
+        <script type="text/javascript" src="js/babytracker-directives.js"></script>
+        <script type="text/javascript" src="js/babytracker-filters.js"></script>
+        <script type="text/javascript" src="js/babytracker-factories.js"></script>
+        <script type="text/javascript" src="js/babytracker-injectors.js"></script>
+
+        <!-- Google Font -->
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:600' rel='stylesheet' type='text/css'>
+
+        <script>
+            $(document).ready(function() {
+                $('.navbar-nav a:not(.dropdown-toggle)').on('click', function () {
+                    if (isMobileViewPort()) {
+                        $(".navbar-toggle").click();
+                    }
+                });
+
+                // setup toastr options
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-full-width",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+            });
+        </script>
+    </head>
+
+    <body ng-app="babyTrackerApp">
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-default navbar-fixed-top" ng-controller="NavigationController">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li id="actionsSectionLink" ng-show="isLoggedIn()" class="sectionLink" ><a ui-sref="homeactions">ACTIONS</a></li>
+                        <li id="diapersSectionLink" ng-show="isLoggedIn()" class="sectionLink"><a ui-sref="viewdiapers">DIAPER HISTORY</a></li>
+                        <li id="feedingsSectionLink" ng-show="isLoggedIn()" class="sectionLink"><a ui-sref="viewfeedings">FEEDINGS HISTORY</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a id="logoutAnchor" href="" title="Log Out" ng-show="isLoggedIn()" ng-click="logOut()">Log Out</a></li>
+                        <li><a id="changePasswordAnchor" href="" ui-sref="changepassword" title="Change Password" ng-show="isLoggedIn()">Change Password</a></li>
+                        <li><a id="loginAnchor" ui-sref="login" title="Log In" ng-show="!isLoggedIn()">Log In</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="row">
+            <br />
+            <div id="contentBox" class="col-lg-10 col-lg-offset-1 bootstrapContentDiv">
+                <br />
+                <ui-view></ui-view>
+                <br />
+            </div>
+        </div>
+
+    </body>
+
+    <footer>
+        <p><a href="http://www.carlsoncoder.com" target="_blank">Copyright © 2015 - Justin Carlson</a></p>
+    </footer>
+</html>

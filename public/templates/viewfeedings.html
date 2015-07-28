@@ -1,0 +1,37 @@
+<div data-ng-show="errorMessage" class="alert alert-danger row">
+    <span>{{ errorMessage }}</span>
+</div>
+
+<p>Feeding History Records</p>
+
+<table id="feedingRecordsTable" class="table" ts-wrapper>
+    <thead>
+    <tr>
+        <th ts-criteria="overallStartDate" ts-default>Session Start</th>
+        <th ts-criteria="overallEndDate">Session End</th>
+        <th ts-criteria="overallLength">Feeding Length</th>
+        <th ts-criteria="startDateLeft">Start Left</th>
+        <th ts-criteria="lengthInMinutesLeft">Left Length</th>
+        <th ts-criteria="startDateRight">Start Right</th>
+        <th ts-criteria="lengthInMinutesRight">Right Length</th>
+        <th ts-criteria="comment">Comment</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="feeding in allFeedingRecords" ng-class="$even ? 'oddRow' : 'evenRow'" ts-repeat>
+        <td>{{feeding.overallStartDate | date:'MM/dd HH:mm' }}</td>
+        <td>{{feeding.overallEndDate | date:'MM/dd HH:mm' }}</td>
+        <td>{{feeding.overallLength}}</td>
+        <td>{{feeding.startDateLeft | date:'MM/dd HH:mm' }}</td>
+        <td>{{feeding.lengthInMinutesLeft}}</td>
+        <td>{{feeding.startDateRight | date:'MM/dd HH:mm' }}</td>
+        <td>{{feeding.lengthInMinutesRight}}</td>
+        <td>{{diaper.comment}}</td>
+    </tr>
+    </tbody>
+</table>
+
+<a class="actionLink" ui-sref="addfeedingrecord">Add new feeding record</a>
+
+<div script-loader pagename="feedings"></div>
+<toastr-watcher></toastr-watcher>

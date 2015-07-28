@@ -1,0 +1,41 @@
+<p ng-show="isRecordEdit">Edit Diaper Record</p>
+<p ng-show="!isRecordEdit">Add Diaper Record</p>
+
+<div data-ng-show="errorMessage" class="alert alert-danger row">
+    <span>{{ errorMessage }}</span>
+</div>
+
+<div class="form-group">
+    <span>Diaper Date/Time</span>
+    <input type="datetime-local" class="form-control" placeholder="Date/Time" ng-model="currentDiaper.affectedDateTime" />
+</div>
+
+<div class="form-group">
+    <span>Is Wet</span>
+    <input type="checkbox" class="form-control" ng-model="currentDiaper.isWet" />
+</div>
+
+<div class="form-group">
+    <span>Is Dirty</span>
+    <input type="checkbox" class="form-control" ng-model="currentDiaper.isDirty" />
+</div>
+
+<fieldset ng-disabled="!currentDiaper.isDirty" class="form-group">
+    <span>Poop Color</span>
+    <select class="form-control" ng-options="poopColor for poopColor in poopColors" ng-model="selectedPoopColor"></select>
+</fieldset>
+
+<fieldset ng-disabled="!currentDiaper.isDirty" class="form-group">
+    <span>Poop Consistency</span>
+    <select class="form-control" ng-options="poopConsistency for poopConsistency in poopConsistencies" ng-model="selectedPoopConsistency"></select>
+</fieldset>
+
+<div class="form-group">
+    <span>Comment</span>
+    <input type="text" class="form-control" placeholder="Comment" ng-model="currentDiaper.comment" />
+</div>
+
+<button class="btn-lg btn-primary" ng-click="saveDiaperRecord()">Save</button>
+
+<div script-loader pagename="diapers"></div>
+<toastr-watcher></toastr-watcher>

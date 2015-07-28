@@ -1,0 +1,35 @@
+<div data-ng-show="errorMessage" class="alert alert-danger row">
+    <span>{{ errorMessage }}</span>
+</div>
+
+<p>Diaper History Records</p>
+
+<table id="diaperRecordsTable" class="table" ts-wrapper>
+    <thead>
+        <tr>
+            <th>Actions</th>
+            <th ts-criteria="affectedDateTime" ts-default>Date</th>
+            <th ts-criteria="isWet">Is Wet?</th>
+            <th ts-criteria="isDirty">Is Dirty?</th>
+            <th ts-criteria="color">Color</th>
+            <th ts-criteria="consistency">Consistency</th>
+            <th ts-criteria="comment">Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="diaper in allDiaperRecords" ng-class="$even ? 'oddRow' : 'evenRow'" ts-repeat>
+            <td><a ui-sref="modifydiaperrecord({ diaperId: diaper._id })">EDIT</a> | <a href="" ng-click="deleteDiaperRecord(diaper._id)">DELETE</a></td>
+            <td>{{diaper.affectedDateTime | date:'MM/dd HH:mm' }}</td>
+            <td>{{diaper.isWet | checkmark}}</td>
+            <td>{{diaper.isDirty | checkmark}}</td>
+            <td>{{diaper.color}}</td>
+            <td>{{diaper.consistency}}</td>
+            <td>{{diaper.comment}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<a class="actionLink" ui-sref="adddiaperrecord">Add new diaper record</a>
+
+<div script-loader pagename="diapers"></div>
+<toastr-watcher></toastr-watcher>

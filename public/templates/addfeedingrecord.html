@@ -1,0 +1,39 @@
+<p>Add Feeding Record <span id="boobTrackingInfoMsgId"></span></p>
+
+<div data-ng-show="errorMessage" class="alert alert-danger row">
+    <span>{{ errorMessage }}</span>
+</div>
+
+<button id="leftBoobTrackingButton" class="btn-primary">Start Left Boob Tracking</button>
+
+<div class="form-group" style="margin-top: 20px;">
+    <span>Start Time - Left Boob</span>
+    <input id="leftBoobStartTimeInput" type="datetime-local" class="form-control" placeholder="Start Time - Left" ng-model="currentFeeding.startDateLeft" disabled />
+</div>
+
+<div class="form-group" style="margin-bottom: 20px;">
+    <span>Length (minutes) - Left Boob</span>
+    <input id="leftBoobLengthInput" type="number" class="form-control" placeholder="Length - Left" ng-model="currentFeeding.lengthInMinutesLeft" disabled />
+</div>
+
+<button id="rightBoobTrackingButton" class="btn-primary">Start Right Boob Tracking</button>
+
+<div class="form-group" style="margin-top: 20px;">
+    <span>Start Time - Right Boob</span>
+    <input id="rightBoobStartTimeInput" type="datetime-local" class="form-control" placeholder="Start Time - Right" ng-model="currentFeeding.startDateRight" disabled />
+</div>
+
+<div class="form-group">
+    <span>Length (minutes) - Right Boob</span>
+    <input id="rightBoobLengthInput" type="number" class="form-control" placeholder="Length - Right" ng-model="currentFeeding.lengthInMinutesRight" disabled />
+</div>
+
+<div class="form-group">
+    <span>Comment</span>
+    <input type="text" class="form-control" placeholder="Comment" ng-model="currentFeeding.comment" />
+</div>
+
+<button id="saveNewFeedingRecordButtonId" class="btn-lg btn-primary" ng-click="saveFeedingRecord()">Save</button>
+
+<div script-loader pagename="addFeedingRecord"></div>
+<toastr-watcher></toastr-watcher>

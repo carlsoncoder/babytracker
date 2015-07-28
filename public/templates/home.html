@@ -1,0 +1,34 @@
+<div data-ng-show="errorMessage" class="alert alert-danger row">
+    <span>{{ errorMessage }}</span>
+</div>
+
+<h3>Actions:</h3>
+<br />
+
+<div>
+    <a class="actionLink" ui-sref="adddiaperrecord">Add new diaper record</a>
+</div>
+
+<br />
+<br />
+
+<div>
+    <a class="actionLink" ui-sref="addfeedingrecord">Add new feeding record</a>
+</div>
+
+<br />
+<br />
+
+<div>
+    <a class="actionLink" ui-sref="viewdiapers">View Diaper History</a>
+</div>
+
+<br />
+<br />
+
+<div>
+    <a class="actionLink" ui-sref="viewfeedings">View Feeding History</a>
+</div>
+
+<div script-loader pagename="home"></div>
+<toastr-watcher></toastr-watcher>
