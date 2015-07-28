@@ -12,6 +12,7 @@ var feedingsSectionLinkId = '#feedingsSectionLink';
 var leftBoobButtonId = '#leftBoobTrackingButton';
 var leftBoobLengthInputId = '#leftBoobLengthInput';
 var leftBoobStartTimeInputId = '#leftBoobStartTimeInput';
+var leftBoobTimerTextId = '#leftBoobTimerTextId';
 
 // left boob calculations
 var currentlyTrackingLeft = false;
@@ -22,12 +23,16 @@ var leftTrackingLengthMinutes = null;
 var rightBoobButtonId = '#rightBoobTrackingButton';
 var rightBoobLengthInputId = '#rightBoobLengthInput';
 var rightBoobStartTimeInputId = '#rightBoobStartTimeInput';
+var rightBoobTimerTextId = '#rightBoobTimerTextId';
 
 // right boob calculations
 var currentlyTrackingRight = false;
 var rightTrackingStartTime = null;
 var rightTrackingLengthMinutes = null;
 
+// stopwatch timers
+var rightBoobTimer;
+var leftBoobTimer;
 
 /// <summary>
 /// Handles JavaScript code that must run when a given Angular controller is initialized.
@@ -58,6 +63,14 @@ function initializeBoobTracking() {
     leftTrackingLengthMinutes = null;
     rightTrackingLengthMinutes = null;
 
+    if (leftBoobTimer) {
+        clearInterval(leftBoobTimer);
+    }
+
+    if (rightBoobTimer) {
+        clearInterval(rightBoobTimer);
+    }
+
     $(leftBoobButtonId).click(function() {
         if (currentlyTrackingLeft) {
             // we are already tracking and need to stop
@@ -75,6 +88,12 @@ function initializeBoobTracking() {
             $(newFeedingRecordSaveButtonId).prop('disabled', false);
             $(leftBoobButtonId).text('Start Left Boob Tracking');
             currentlyTrackingLeft = false;
+
+            if (leftBoobTimer) {
+                clearInterval(leftBoobTimer);
+            }
+
+            $(leftBoobTimerTextId).text('');
         }
         else {
             // we need to start tracking
@@ -86,6 +105,12 @@ function initializeBoobTracking() {
             $(leftBoobButtonId).text('Stop Left Boob Tracking');
             $(rightBoobButtonId).prop('disabled', true);
             $(newFeedingRecordSaveButtonId).prop('disabled', true);
+
+            if (leftBoobTimer) {
+                clearInterval(leftBoobTimer);
+            }
+
+            leftBoobTimer = setInterval(function() {boobTimerTracker(leftTrackingStartTime, leftBoobTimerTextId);}, 1000);
         }
     });
 
@@ -106,6 +131,12 @@ function initializeBoobTracking() {
             $(newFeedingRecordSaveButtonId).prop('disabled', false);
             $(rightBoobButtonId).text('Start Right Boob Tracking');
             currentlyTrackingRight = false;
+
+            if (rightBoobTimer) {
+                clearInterval(rightBoobTimer);
+            }
+
+            $(rightBoobTimerTextId).text('');
         }
         else {
             // we need to start tracking
@@ -117,8 +148,37 @@ function initializeBoobTracking() {
             $(rightBoobButtonId).text('Stop Right Boob Tracking');
             $(leftBoobButtonId).prop('disabled', true);
             $(newFeedingRecordSaveButtonId).prop('disabled', true);
+
+            if (rightBoobTimer) {
+                clearInterval(rightBoobTimer);
+            }
+
+            rightBoobTimer = setInterval(function() {boobTimerTracker(rightTrackingStartTime, rightBoobTimerTextId);}, 1000);
         }
     });
+}
+
+function boobTimerTracker(startTime, timerTextId) {
+    var now = new Date();
+    var totalSeconds = Math.round((now - startTime) / 1000);
+
+    var minutes = 0;
+    var seconds = totalSeconds;
+
+    if (totalSeconds > 59) {
+        minutes = Math.floor(totalSeconds / 60);
+        seconds = (totalSeconds - (minutes * 60));
+    }
+
+    if (minutes.toString().length == 1) {
+        minutes = '0' + minutes.toString();
+    }
+
+    if (seconds.toString().length == 1) {
+        seconds = '0' + seconds.toString();
+    }
+
+    $(timerTextId).text(minutes + ':' + seconds);
 }
 
 /// <summary>

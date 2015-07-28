@@ -71,6 +71,14 @@ babyTrackerFactories.factory('feedings', ['$http', function($http) {
 
                         feeding.lengthInMinutesLeft = Math.round(feeding.lengthInMinutesLeft);
                         feeding.lengthInMinutesRight = Math.round(feeding.lengthInMinutesRight);
+
+                        if (feeding.lengthInMinutesLeft === 0) {
+                            feeding.lengthInMinutesLeft = null;
+                        }
+
+                        if (feeding.lengthInMinutesRight === 0) {
+                            feeding.lengthInMinutesRight = null;
+                        }
                     });
 
                     callback(true, '', data);

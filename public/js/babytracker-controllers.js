@@ -79,6 +79,14 @@ babyTrackerControllers.controller('BabyController', [
             $scope.currentFeeding.startDateRight = rightTrackingStartTime;
             $scope.currentFeeding.lengthInMinutesRight = rightTrackingLengthMinutes;
 
+            if (leftBoobTimer) {
+                clearInterval(leftBoobTimer);
+            }
+
+            if (rightBoobTimer) {
+                clearInterval(rightBoobTimer);
+            }
+
             var isLeftDefined = (!isNullOrUndefined($scope.currentFeeding.startDateLeft) && $scope.currentFeeding.startDateLeft !== '') && (!isNullOrUndefined($scope.currentFeeding.lengthInMinutesLeft) && $scope.currentFeeding.lengthInMinutesLeft !== '');
             var isRightDefined = (!isNullOrUndefined($scope.currentFeeding.startDateRight) && $scope.currentFeeding.startDateRight !== '') && (!isNullOrUndefined($scope.currentFeeding.lengthInMinutesRight) && $scope.currentFeeding.lengthInMinutesRight !== '');
 

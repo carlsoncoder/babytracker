@@ -4,7 +4,10 @@
     <span>{{ errorMessage }}</span>
 </div>
 
-<button id="leftBoobTrackingButton" class="btn-primary">Start Left Boob Tracking</button>
+<div>
+    <button id="leftBoobTrackingButton" class="btn-primary">Start Left Boob Tracking</button>
+    <span class="timerSpan" id="leftBoobTimerTextId"></span>
+</div>
 
 <div class="form-group" style="margin-top: 20px;">
     <span>Start Time - Left Boob</span>
@@ -16,7 +19,10 @@
     <input id="leftBoobLengthInput" type="number" class="form-control" placeholder="Length - Left" ng-model="currentFeeding.lengthInMinutesLeft" disabled />
 </div>
 
-<button id="rightBoobTrackingButton" class="btn-primary">Start Right Boob Tracking</button>
+<div>
+    <button id="rightBoobTrackingButton" class="btn-primary">Start Right Boob Tracking</button>
+    <span class="timerSpan" id="rightBoobTimerTextId"></span>
+</div>
 
 <div class="form-group" style="margin-top: 20px;">
     <span>Start Time - Right Boob</span>
