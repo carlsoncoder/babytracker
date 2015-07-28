@@ -62,7 +62,7 @@ function initializeBoobTracking() {
         if (currentlyTrackingLeft) {
             // we are already tracking and need to stop
             var now = new Date();
-            leftTrackingLengthMinutes = (now - leftTrackingStartTime) / 1000 / 60;
+            leftTrackingLengthMinutes = Math.round((now - leftTrackingStartTime) / 1000 / 60);
             if (leftTrackingLengthMinutes < 1) {
                 leftTrackingLengthMinutes = 1;
             }
@@ -93,7 +93,7 @@ function initializeBoobTracking() {
         if (currentlyTrackingRight) {
             // we are already tracking and need to stop
             var now = new Date();
-            rightTrackingLengthMinutes = (now - rightTrackingStartTime) / 1000 / 60;
+            rightTrackingLengthMinutes = Math.round((now - rightTrackingStartTime) / 1000 / 60);
             if (rightTrackingLengthMinutes < 1) {
                 rightTrackingLengthMinutes = 1;
             }

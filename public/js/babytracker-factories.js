@@ -68,6 +68,9 @@ babyTrackerFactories.factory('feedings', ['$http', function($http) {
                         var leftLength = isNullOrUndefined(feeding.lengthInMinutesLeft) ? 0 : feeding.lengthInMinutesLeft;
                         var rightLength = isNullOrUndefined(feeding.lengthInMinutesRight) ? 0 : feeding.lengthInMinutesRight;
                         feeding.overallLength = leftLength + rightLength;
+
+                        feeding.lengthInMinutesLeft = Math.round(feeding.lengthInMinutesLeft);
+                        feeding.lengthInMinutesRight = Math.round(feeding.lengthInMinutesRight);
                     });
 
                     callback(true, '', data);
@@ -109,8 +112,8 @@ babyTrackerFactories.factory('feedings', ['$http', function($http) {
     };
 
     function getComparedDate(dateOne, dateTwo, isEarliest, dateOneMinutes, dateTwoMinutes) {
-        var dateOneUndefined = typeof(dateOne) === null || typeof(dateOne) === undefined || dateOne === '';
-        var dateTwoUndefined = typeof(dateTwo) === null || typeof(dateTwo) === undefined || dateTwo === '';
+        var dateOneUndefined = typeof(dateOne) === null || typeof(dateOne) === undefined || dateOne === '' || dateOne === null;
+        var dateTwoUndefined = typeof(dateTwo) === null || typeof(dateTwo) === undefined || dateTwo === '' || dateTwo === null;
 
         if (dateOneUndefined && dateTwoUndefined) {
             return null;

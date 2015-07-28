@@ -16,12 +16,18 @@ feedingsRepository.loadAll = function(userId, callback) {
 };
 
 feedingsRepository.save = function(userId, feedingsRecord, callback) {
+    var isLeftDefined = feedingsRecord.startDateLeft !== null && feedingsRecord.startDateLeft !== '';
+    var isRightDefined = feedingsRecord.startDateRight !== null && feedingsRecord.startDateRight !== '';
+
+    var startDateLeftBoob = isLeftDefined ? new Date(feedingsRecord.startDateLeft) : null;
+    var startDateRightBoob = isRightDefined ? new Date(feedingsRecord.startDateRight) : null;
+
     if (feedingsRecord._id) {
         // updating an existing record
         var updateData = {
-            startDateLeft: new Date(feedingsRecord.startDateLeft),
+            startDateLeft: startDateLeftBoob,
             lengthInMinutesLeft: feedingsRecord.lengthInMinutesLeft,
-            startDateRight: new Date(feedingsRecord.startDateRight),
+            startDateRight: startDateRightBoob,
             lengthInMinutesRight: feedingsRecord.lengthInMinutesRight,
             comment: feedingsRecord.comment
         };
@@ -38,9 +44,9 @@ feedingsRepository.save = function(userId, feedingsRecord, callback) {
         // saving a new record
         var newFeeding = new Feedings({
             userId: new ObjectId(userId),
-            startDateLeft: new Date(feedingsRecord.startDateLeft),
+            startDateLeft: startDateLeftBoob,
             lengthInMinutesLeft: feedingsRecord.lengthInMinutesLeft,
-            startDateRight: new Date(feedingsRecord.startDateRight),
+            startDateRight: startDateRightBoob,
             lengthInMinutesRight: feedingsRecord.lengthInMinutesRight,
             comment: feedingsRecord.comment
         });
