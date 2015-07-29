@@ -39,7 +39,7 @@ babyTrackerDirectives.directive('scriptLoader', function() {
                     break;
                 }
 
-                case 'modifyFeedingRecord':
+                case 'addManualFeedingRecord':
                 {
                     initializeOnControllerLoad(feedingsSectionLinkId, false);
                     break;

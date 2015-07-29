@@ -2,7 +2,7 @@
     <span>{{ errorMessage }}</span>
 </div>
 
-<p>Diaper History Records</p>
+<p>Diaper History Records - <span><a class="actionLink" style="font-size:1.2em;" ui-sref="adddiaperrecord">&nbsp;Add new diaper record</a></span></p>
 
 <table id="diaperRecordsTable" class="table" ts-wrapper>
     <thead>
@@ -28,8 +28,6 @@
         </tr>
     </tbody>
 </table>
-
-<a class="actionLink" ui-sref="adddiaperrecord">Add new diaper record</a>
 
 <div script-loader pagename="diapers"></div>
 <toastr-watcher></toastr-watcher>

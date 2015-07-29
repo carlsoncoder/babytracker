@@ -226,6 +226,15 @@ function isNullOrUndefined(obj) {
 }
 
 /// <summary>
+/// Determines if the object value is a valid number.
+/// </summary>
+/// <param name="obj">The object to be evaluated.</param>
+/// <returns>True if the object is a valid number, otherwise false.</returns>
+function isNumeric(num) {
+    return !isNaN(parseFloat(num)) && isFinite(num);
+}
+
+/// <summary>
 /// Determines if we are in a mobile viewport.
 /// </summary>
 /// <returns>True if the viewport is 'mobile' width, otherwise false.</returns>

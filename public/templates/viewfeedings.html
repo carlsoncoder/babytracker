@@ -2,11 +2,12 @@
     <span>{{ errorMessage }}</span>
 </div>
 
-<p>Feeding History Records - Times are in minutes</p>
+<p>Feeding History Records - Times are in minutes - <span><a class="actionLink" style="font-size:1.2em;" ui-sref="addfeedingrecord">&nbsp;Add new feeding record</a></span></p>
 
 <table id="feedingRecordsTable" class="table" ts-wrapper>
     <thead>
     <tr>
+        <th>Actions</th>
         <th ts-criteria="overallStartDate" ts-default="descending">Session Start</th>
         <th ts-criteria="overallEndDate">Session End</th>
         <th ts-criteria="overallLength">Feeding Length</th>
@@ -19,6 +20,7 @@
     </thead>
     <tbody>
     <tr ng-repeat="feeding in allFeedingRecords" ng-class="$even ? 'oddRow' : 'evenRow'" ts-repeat>
+        <td><a ui-sref="modifyfeedingrecord({ feedingId: feeding._id })">EDIT</a> | <a href="" ng-click="deleteFeedingRecord(feeding._id)">DELETE</a></td>
         <td>{{feeding.overallStartDate | date:'MM/dd HH:mm' }}</td>
         <td>{{feeding.overallEndDate | date:'MM/dd HH:mm' }}</td>
         <td>{{feeding.overallLength}}</td>
@@ -30,8 +32,6 @@
     </tr>
     </tbody>
 </table>
-
-<a class="actionLink" ui-sref="addfeedingrecord">Add new feeding record</a>
 
 <div script-loader pagename="feedings"></div>
 <toastr-watcher></toastr-watcher>

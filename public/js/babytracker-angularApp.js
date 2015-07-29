@@ -82,10 +82,23 @@ app.config([
                     }]
                 })
             .state(
+                'addmanualfeedingrecord',
+                {
+                    url: '/addmanualfeedingrecord',
+                    templateUrl: 'templates/manualaddmodifyfeedingrecord.html',
+                    controller: 'BabyController',
+                    onEnter: ['$state', 'auth', function($state, auth) {
+                        if (!auth.isLoggedIn())
+                        {
+                            $state.go('login');
+                        }
+                    }]
+                })
+            .state(
                 'modifyfeedingrecord',
                 {
                     url: '/modifyfeedingrecord/{feedingId}',
-                    templateUrl: 'templates/modifyfeedingrecord.html',
+                    templateUrl: 'templates/manualaddmodifyfeedingrecord.html',
                     controller: 'BabyController',
                     onEnter: ['$state', 'auth', function($state, auth) {
                         if (!auth.isLoggedIn())

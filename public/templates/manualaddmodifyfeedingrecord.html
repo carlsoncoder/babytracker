@@ -1,0 +1,36 @@
+<p ng-show="isRecordEdit">Edit Feeding Record</p>
+<p ng-show="!isRecordEdit">Manual Add Feeding Record</p>
+
+<div data-ng-show="errorMessage" class="alert alert-danger row">
+    <span>{{ errorMessage }}</span>
+</div>
+
+<div class="form-group" style="margin-top: 20px;">
+    <span>Start Time - Left Boob</span>
+    <input id="leftBoobStartTimeInput" type="datetime-local" class="form-control" placeholder="Start Time - Left" ng-model="currentFeeding.startDateLeft" />
+</div>
+
+<div class="form-group" style="margin-bottom: 20px;">
+    <span>Length (minutes) - Left Boob</span>
+    <input id="leftBoobLengthInput" type="number" class="form-control" placeholder="Length - Left" ng-model="currentFeeding.lengthInMinutesLeft" />
+</div>
+
+<div class="form-group" style="margin-top: 20px;">
+    <span>Start Time - Right Boob</span>
+    <input id="rightBoobStartTimeInput" type="datetime-local" class="form-control" placeholder="Start Time - Right" ng-model="currentFeeding.startDateRight" />
+</div>
+
+<div class="form-group">
+    <span>Length (minutes) - Right Boob</span>
+    <input id="rightBoobLengthInput" type="number" class="form-control" placeholder="Length - Right" ng-model="currentFeeding.lengthInMinutesRight" />
+</div>
+
+<div class="form-group">
+    <span>Comment</span>
+    <input type="text" class="form-control" placeholder="Comment" ng-model="currentFeeding.comment" />
+</div>
+
+<button id="saveNewFeedingRecordButtonId" class="btn-lg btn-primary" ng-click="saveManualFeedingRecord()">Save</button>
+
+<div script-loader pagename="addManualFeedingRecord"></div>
+<toastr-watcher></toastr-watcher>

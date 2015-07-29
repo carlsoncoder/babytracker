@@ -141,8 +141,8 @@ babyTrackerFactories.factory('feedings', ['$http', function($http) {
             });
     };
 
-    feedingsFactory.delete = function(feeding, callback) {
-        $http.post('/feedings/deletefeeding', { feeding: feeding })
+    feedingsFactory.delete = function(feedingId, callback) {
+        $http.post('/feedings/deletefeeding', { feedingId: feedingId })
             .success(function(data, status) {
                 if (status === 500) {
                     callback(false, data.toString());

@@ -52,6 +52,25 @@ babyTrackerControllers.controller('BabyController', [
             });
         }
 
+        if ($stateParams.feedingId) {
+            $scope.isRecordEdit = true;
+            feedings.loadAll(function(status, err, feedings) {
+                if (!status) {
+                    $scope.userMessage = { type: 'error', title: 'Feeding Records', message: 'Error loading feeding records: ' + err, nextState: 'NONE'};
+                }
+                else {
+                    for (var i = 0; i < feedings.data.length; i++) {
+                        if (feedings.data[i]._id === $stateParams.feedingId) {
+                            $scope.currentFeeding = feedings.data[i];
+                            $scope.currentFeeding.startDateLeft = new Date($scope.currentFeeding.startDateLeft);
+                            $scope.currentFeeding.startDateRight = new Date($scope.currentFeeding.startDateRight);
+                            break;
+                        }
+                    }
+                }
+            });
+        }
+
         $scope.loadDiaperDetails = function() {
             diapers.loadAll(function(status, err, diapers) {
                 if (!status) {
@@ -71,6 +90,51 @@ babyTrackerControllers.controller('BabyController', [
                 else {
                     $scope.allFeedingRecords = feedings.data;
                     $scope.lastUsedBoob = feedings.lastUsedBoob;
+                }
+            });
+        };
+
+        $scope.saveManualFeedingRecord = function() {
+            console.log($scope.currentFeeding);
+            var isLeftDefined = (!isNullOrUndefined($scope.currentFeeding.startDateLeft) && $scope.currentFeeding.startDateLeft !== '') && (!isNullOrUndefined($scope.currentFeeding.lengthInMinutesLeft) && $scope.currentFeeding.lengthInMinutesLeft !== '');
+            var isRightDefined = (!isNullOrUndefined($scope.currentFeeding.startDateRight) && $scope.currentFeeding.startDateRight !== '') && (!isNullOrUndefined($scope.currentFeeding.lengthInMinutesRight) && $scope.currentFeeding.lengthInMinutesRight !== '');
+
+            if (!isLeftDefined && !isRightDefined) {
+                $scope.errorMessage = 'Either the right, left, or both boobs must have a valid start time and length';
+                return;
+            }
+
+            if (isLeftDefined) {
+                if (!isNumeric($scope.currentFeeding.lengthInMinutesLeft)) {
+                    $scope.errorMessage = "Please enter a valid numeric value for the left length in minutes";
+                    return;
+                }
+
+                $scope.currentFeeding.lengthInMinutesLeft = Math.round($scope.currentFeeding.lengthInMinutesLeft);
+            }
+
+            if (isRightDefined) {
+                if (!isNumeric($scope.currentFeeding.lengthInMinutesRight)) {
+                    $scope.errorMessage = "Please enter a valid numeric value for the right length in minutes";
+                    return;
+                }
+
+                $scope.currentFeeding.lengthInMinutesRight = Math.round($scope.currentFeeding.lengthInMinutesRight);
+            }
+
+            if (!isNullOrUndefined($scope.currentFeeding.comment) && $scope.currentFeeding.comment !== '') {
+                if ($scope.currentFeeding.comment.length > 256) {
+                    $scope.errorMessage = 'The maximum comment length is 256.  Please enter a shorter comment';
+                    return;
+                }
+            }
+
+            feedings.save($scope.currentFeeding, function(status, msg) {
+                if (status === true) {
+                    $scope.userMessage = { type: 'success', title: 'Feeding Record', message: 'Feeding Record Saved!', nextState: 'viewfeedings'};
+                }
+                else {
+                    $scope.errorMessage = 'Error saving feeding: ' + msg;
                 }
             });
         };
@@ -117,6 +181,22 @@ babyTrackerControllers.controller('BabyController', [
                     $(newFeedingRecordSaveButtonId).prop('disabled', false);
                 }
             });
+        };
+
+        $scope.deleteFeedingRecord = function(feedingId) {
+            var prompt = confirm("Are you sure you want delete this feeding record?");
+            if (prompt === true) {
+                feedings.delete(feedingId, function (status, msg) {
+                    if (status === true) {
+                        $scope.userMessage = { type: 'success', title: 'Feeding History', message: 'Feeding successfully deleted!', nextState: 'NONE'};
+                        updateDeletedFeedingRecord(feedingId);
+                    }
+                    else {
+                        $scope.errorMessage = 'Error deleting feeding: ' + msg;
+                    }
+
+                });
+            }
         };
 
         $scope.saveDiaperRecord = function() {
@@ -198,6 +278,17 @@ babyTrackerControllers.controller('BabyController', [
             }
 
             $scope.allDiaperRecords = newDiaperRecords;
+        }
+
+        function updateDeletedFeedingRecord(deletedFeedingId) {
+            var newFeedingRecords = [];
+            for (var i = 0; i < $scope.allFeedingRecords.length; i++) {
+                if ($scope.allFeedingRecords[i]._id !== deletedFeedingId) {
+                    newFeedingRecords.push($scope.allFeedingRecords[i]);
+                }
+            }
+
+            $scope.allFeedingRecords = newFeedingRecords;
         }
 }]);
 

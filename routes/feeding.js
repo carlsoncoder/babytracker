@@ -19,7 +19,7 @@ router.get('/all', auth, function(req, res, next) {
 
 // POST '/feedings/deletefeeding'
 router.post('/deletefeeding', auth, function(req, res, next) {
-    feedingsRepository.delete(req.payload._id, req.body.feeding._id, function(err) {
+    feedingsRepository.delete(req.payload._id, req.body.feedingId, function(err) {
         if (err) {
             return res.status(500).json(err);
         }
