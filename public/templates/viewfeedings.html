@@ -2,12 +2,12 @@
     <span>{{ errorMessage }}</span>
 </div>
 
-<p>Feeding History Records</p>
+<p>Feeding History Records - Times are in minutes</p>
 
 <table id="feedingRecordsTable" class="table" ts-wrapper>
     <thead>
     <tr>
-        <th ts-criteria="overallStartDate" ts-default>Session Start</th>
+        <th ts-criteria="overallStartDate" ts-default="descending">Session Start</th>
         <th ts-criteria="overallEndDate">Session End</th>
         <th ts-criteria="overallLength">Feeding Length</th>
         <th ts-criteria="startDateLeft">Start Left</th>

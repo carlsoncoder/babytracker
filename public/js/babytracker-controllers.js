@@ -19,9 +19,10 @@ babyTrackerControllers.controller('BabyController', [
         $scope.userMessage = {};
         $scope.allDiaperRecords = [];
         $scope.allFeedingRecords = [];
+        $scope.lastUsedBoob = '';
 
         $scope.poopColors = ['Black', 'Green', 'Brown', 'Yellow'];
-        $scope.poopConsistencies = ['Thick', 'Solid', 'Runny', 'Seedy'];
+        $scope.poopConsistencies = ['Thick', 'Solid', 'Watery', 'Seedy'];
         $scope.selectedPoopColor = '';
         $scope.selectedPoopConsistency = '';
 
@@ -68,12 +69,15 @@ babyTrackerControllers.controller('BabyController', [
                     $scope.userMessage = { type: 'error', title: 'Feeding Records', message: 'Error loading feeding records: ' + err, nextState: 'NONE'};
                 }
                 else {
-                    $scope.allFeedingRecords = feedings;
+                    $scope.allFeedingRecords = feedings.data;
+                    $scope.lastUsedBoob = feedings.lastUsedBoob;
                 }
             });
         };
 
         $scope.saveFeedingRecord = function() {
+            $(newFeedingRecordSaveButtonId).prop('disabled', true);
+
             $scope.currentFeeding.startDateLeft = leftTrackingStartTime;
             $scope.currentFeeding.lengthInMinutesLeft = leftTrackingLengthMinutes;
             $scope.currentFeeding.startDateRight = rightTrackingStartTime;
@@ -92,12 +96,14 @@ babyTrackerControllers.controller('BabyController', [
 
             if (!isLeftDefined && !isRightDefined) {
                 $scope.errorMessage = 'Either the right, left, or both boobs must have a valid start time and length';
+                $(newFeedingRecordSaveButtonId).prop('disabled', false);
                 return;
             }
 
             if (!isNullOrUndefined($scope.currentFeeding.comment) && $scope.currentFeeding.comment !== '') {
                 if ($scope.currentFeeding.comment.length > 256) {
                     $scope.errorMessage = 'The maximum comment length is 256.  Please enter a shorter comment';
+                    $(newFeedingRecordSaveButtonId).prop('disabled', false);
                     return;
                 }
             }
@@ -108,6 +114,7 @@ babyTrackerControllers.controller('BabyController', [
                 }
                 else {
                     $scope.errorMessage = 'Error saving feeding: ' + msg;
+                    $(newFeedingRecordSaveButtonId).prop('disabled', false);
                 }
             });
         };

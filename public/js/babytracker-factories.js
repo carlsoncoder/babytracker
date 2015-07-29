@@ -61,9 +61,20 @@ babyTrackerFactories.factory('feedings', ['$http', function($http) {
                     callback(false, data.toString(), null);
                 }
                 else {
+                    var latestFeedingRecord = null;
                     data.forEach(function(feeding) {
                         feeding.overallStartDate = getComparedDate(feeding.startDateLeft, feeding.startDateRight, true, -1, -1);
                         feeding.overallEndDate = getComparedDate(feeding.startDateLeft, feeding.startDateRight, false, feeding.lengthInMinutesLeft, feeding.lengthInMinutesRight);
+
+                        if (latestFeedingRecord === null) {
+                            latestFeedingRecord = feeding;
+                        }
+                        else {
+                            var latestDate = new Date(latestFeedingRecord.overallStartDate);
+                            if (latestDate > feeding.overallStartDate) {
+                                latestFeedingRecord = feeding;
+                            }
+                        }
 
                         var leftLength = isNullOrUndefined(feeding.lengthInMinutesLeft) ? 0 : feeding.lengthInMinutesLeft;
                         var rightLength = isNullOrUndefined(feeding.lengthInMinutesRight) ? 0 : feeding.lengthInMinutesRight;
@@ -81,7 +92,33 @@ babyTrackerFactories.factory('feedings', ['$http', function($http) {
                         }
                     });
 
-                    callback(true, '', data);
+                    var returnValue = {};
+                    returnValue.data = data;
+
+                    // latestFeedingRecord will give us the last used boob, if possible
+                    returnValue.lastUsedBoob = 'Unknown';
+                    if (latestFeedingRecord !== null) {
+                        if (latestFeedingRecord.lengthInMinutesLeft === null || latestFeedingRecord.lengthInMinutesLeft === 0) {
+                            returnValue.lastUsedBoob = 'Right';
+                        }
+                        else if (latestFeedingRecord.lengthInMinutesRight === null || latestFeedingRecord.lengthInMinutesRight === 0) {
+                            returnValue.lastUsedBoob = 'Left';
+                        }
+                        else {
+                            // figure out which one to use
+                            var leftDate = new Date(latestFeedingRecord.startDateLeft);
+                            var rightDate = new Date(latestFeedingRecord.startDateRight);
+
+                            if (leftDate > rightDate) {
+                                returnValue.lastUsedBoob = 'Left';
+                            }
+                            else {
+                                returnValue.lastUsedBoob = 'Right';
+                            }
+                        }
+                    }
+
+                    callback(true, '', returnValue);
                 }
             })
             .error(function(data, status) {

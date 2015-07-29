@@ -35,6 +35,7 @@ babyTrackerDirectives.directive('scriptLoader', function() {
                 case 'addFeedingRecord':
                 {
                     initializeOnControllerLoad(feedingsSectionLinkId, true);
+                    scope.loadFeedingDetails();
                     break;
                 }
 

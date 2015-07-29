@@ -2,7 +2,6 @@
 var bootstrap_grid_float_breakpoint_pixel_value = 1200;
 
 var newFeedingRecordSaveButtonId = '#saveNewFeedingRecordButtonId';
-var boobTrackingInfoMessageId = '#boobTrackingInfoMsgId';
 
 var actionsSectionLinkId = '#actionsSectionLink';
 var diapersSectionLinkId = '#diapersSectionLink';
@@ -82,11 +81,14 @@ function initializeBoobTracking() {
 
             $(leftBoobLengthInputId).val(leftTrackingLengthMinutes);
 
-            $(boobTrackingInfoMessageId).text('');
             $(leftBoobButtonId).prop('disabled', false);
             $(rightBoobButtonId).prop('disabled', false);
+            $(rightBoobButtonId).removeClass('boobTrackingButtonDisabled');
             $(newFeedingRecordSaveButtonId).prop('disabled', false);
+            $(newFeedingRecordSaveButtonId).removeClass('boobTrackingButtonDisabled');
             $(leftBoobButtonId).text('Start Left Boob Tracking');
+            $(leftBoobButtonId).removeClass('boobTrackingButtonActive');
+            $(leftBoobButtonId).trigger('blur');
             currentlyTrackingLeft = false;
 
             if (leftBoobTimer) {
@@ -96,15 +98,26 @@ function initializeBoobTracking() {
             $(leftBoobTimerTextId).text('');
         }
         else {
+            if (!isNullOrUndefined(leftTrackingLengthMinutes) && leftTrackingLengthMinutes !== '') {
+                var prompt = confirm("You already have data stored for this boob.  If you continue, you will overwrite the present information.  Do you want to continue?");
+                if (prompt !== true) {
+                    return;
+                }
+            }
+
             // we need to start tracking
             currentlyTrackingLeft = true;
-            $(boobTrackingInfoMessageId).text('- Currently timing left boob');
             leftTrackingStartTime = new Date();
             $(leftBoobStartTimeInputId).val(new Date(leftTrackingStartTime.getTime()-leftTrackingStartTime.getTimezoneOffset()*60000).toISOString().substring(0,19));
 
             $(leftBoobButtonId).text('Stop Left Boob Tracking');
+            $(leftBoobButtonId).addClass('boobTrackingButtonActive');
+            $(leftBoobButtonId).trigger('blur');
+
             $(rightBoobButtonId).prop('disabled', true);
+            $(rightBoobButtonId).addClass('boobTrackingButtonDisabled');
             $(newFeedingRecordSaveButtonId).prop('disabled', true);
+            $(newFeedingRecordSaveButtonId).addClass('boobTrackingButtonDisabled');
 
             if (leftBoobTimer) {
                 clearInterval(leftBoobTimer);
@@ -125,11 +138,14 @@ function initializeBoobTracking() {
 
             $(rightBoobLengthInputId).val(rightTrackingLengthMinutes);
 
-            $(boobTrackingInfoMessageId).text('');
             $(leftBoobButtonId).prop('disabled', false);
+            $(leftBoobButtonId).removeClass('boobTrackingButtonDisabled');
             $(rightBoobButtonId).prop('disabled', false);
             $(newFeedingRecordSaveButtonId).prop('disabled', false);
+            $(newFeedingRecordSaveButtonId).removeClass('boobTrackingButtonDisabled');
             $(rightBoobButtonId).text('Start Right Boob Tracking');
+            $(rightBoobButtonId).removeClass('boobTrackingButtonActive');
+            $(rightBoobButtonId).trigger('blur');
             currentlyTrackingRight = false;
 
             if (rightBoobTimer) {
@@ -139,15 +155,26 @@ function initializeBoobTracking() {
             $(rightBoobTimerTextId).text('');
         }
         else {
+            if (!isNullOrUndefined(rightTrackingLengthMinutes) && rightTrackingLengthMinutes !== '') {
+                var prompt = confirm("You already have data stored for this boob.  If you continue, you will overwrite the present information.  Do you want to continue?");
+                if (prompt !== true) {
+                    return;
+                }
+            }
+
             // we need to start tracking
             currentlyTrackingRight = true;
-            $(boobTrackingInfoMessageId).text('- Currently timing right boob');
             rightTrackingStartTime = new Date();
             $(rightBoobStartTimeInputId).val(new Date(rightTrackingStartTime.getTime()-rightTrackingStartTime.getTimezoneOffset()*60000).toISOString().substring(0,19));
 
             $(rightBoobButtonId).text('Stop Right Boob Tracking');
+            $(rightBoobButtonId).addClass('boobTrackingButtonActive');
+            $(rightBoobButtonId).trigger('blur');
+
             $(leftBoobButtonId).prop('disabled', true);
+            $(leftBoobButtonId).addClass('boobTrackingButtonDisabled');
             $(newFeedingRecordSaveButtonId).prop('disabled', true);
+            $(newFeedingRecordSaveButtonId).addClass('boobTrackingButtonDisabled');
 
             if (rightBoobTimer) {
                 clearInterval(rightBoobTimer);
