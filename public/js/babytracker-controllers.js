@@ -112,6 +112,10 @@ babyTrackerControllers.controller('BabyController', [
 
                 $scope.currentFeeding.lengthInMinutesLeft = Math.round($scope.currentFeeding.lengthInMinutesLeft);
             }
+            else {
+                $scope.currentFeeding.lengthInMinutesLeft = null;
+                $scope.currentFeeding.startDateLeft = null;
+            }
 
             if (isRightDefined) {
                 if (!isNumeric($scope.currentFeeding.lengthInMinutesRight)) {
@@ -120,6 +124,10 @@ babyTrackerControllers.controller('BabyController', [
                 }
 
                 $scope.currentFeeding.lengthInMinutesRight = Math.round($scope.currentFeeding.lengthInMinutesRight);
+            }
+            else {
+                $scope.currentFeeding.lengthInMinutesRight = null;
+                $scope.currentFeeding.startDateRight = null;
             }
 
             if (!isNullOrUndefined($scope.currentFeeding.comment) && $scope.currentFeeding.comment !== '') {
