@@ -6,6 +6,7 @@
 body {
   padding: 50px;
   background-image: url("../img/my-background-image.jpg");
+  background-size: 100%;
   font-family: 'Open Sans', sans-serif !important;
 }
 .bootstrapContentDiv {
