@@ -134,6 +134,19 @@ app.config([
                     }]
                 })
             .state(
+                'dailysummary',
+                {
+                    url: '/dailysummary',
+                    templateUrl: 'templates/dailysummary.html',
+                    controller: 'BabyController',
+                    onEnter: ['$state', 'auth', function($state, auth) {
+                        if (!auth.isLoggedIn())
+                        {
+                            $state.go('login');
+                        }
+                    }]
+                })
+            .state(
                 'login',
                 {
                     url: '/login',

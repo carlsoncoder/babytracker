@@ -6,6 +6,7 @@ var newFeedingRecordSaveButtonId = '#saveNewFeedingRecordButtonId';
 var actionsSectionLinkId = '#actionsSectionLink';
 var diapersSectionLinkId = '#diapersSectionLink';
 var feedingsSectionLinkId = '#feedingsSectionLink';
+var dailySummarySectionLinkId = '#dailySummarySectionLink';
 
 // left boob element id's
 var leftBoobButtonId = '#leftBoobTrackingButton';

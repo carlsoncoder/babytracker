@@ -20,6 +20,7 @@
         <script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
         <script type="text/javascript" src="bower_components/angular-tablesort/js/angular-tablesort.js"></script>
         <script type="text/javascript" src="bower_components/toastr/toastr.min.js"></script>
+        <script type="text/javascript" src="bower_components/moment/min/moment.min.js"></script>
 
         <!-- AngularJS -->
         <script type="text/javascript" src="js/babytracker-scripts.js"></script>
@@ -78,6 +79,7 @@
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li id="actionsSectionLink" ng-show="isLoggedIn()" class="sectionLink" ><a ui-sref="homeactions">ACTIONS</a></li>
+                        <li id="dailySummarySectionLink" ng-show="isLoggedIn()" class="sectionLink"><a ui-sref="dailysummary">DAILY SUMMARY</a></li>
                         <li id="diapersSectionLink" ng-show="isLoggedIn()" class="sectionLink"><a ui-sref="viewdiapers">DIAPER HISTORY</a></li>
                         <li id="feedingsSectionLink" ng-show="isLoggedIn()" class="sectionLink"><a ui-sref="viewfeedings">FEEDINGS HISTORY</a></li>
                     </ul>

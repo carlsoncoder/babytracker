@@ -1,0 +1,103 @@
+<div data-ng-show="errorMessage" class="alert alert-danger row">
+    <span>{{ errorMessage }}</span>
+</div>
+
+<div id="chooseDateDiv" ng-show="showDateChanger">
+    <div class="form-group">
+        <span>Selected Date</span>
+        <input type="date" class="form-control" placeholder="Date" ng-model="dateToChange" />
+    </div>
+    <button class="btn btn-primary" ng-click="changeDate()">Change</button>
+</div>
+
+<div ng-hide="showDateChanger">
+    <h3>Daily Summary for {{dailySummary.loadedDate}}:</h3>
+    <br />
+    <button class="btn btn-primary" style="margin-bottom:15px;width:150px;" ng-click="enableShowDateChanger()">Change Date</button>
+
+    <table class="table" ts-wrapper>
+        <thead>
+            <tr style="background-color: grey">
+                <td style="width:50%;"></td>
+                <td style="width:50%;"></td>
+            </tr>
+        </thead>
+        <tbody style="font-weight: bold;">
+            <tr class="oddRow">
+                <td>Most Recently Used Boob</td>
+                <td>{{dailySummary.mostRecentBoob}}</td>
+            </tr>
+            <tr class="evenRow">
+                <td>Wet Diapers</td>
+                <td>{{dailySummary.numberOfWetDiapers}} of {{dailySummary.expectedNumberOfWetDiapers}}</td>
+            </tr>
+            <tr class="oddRow">
+                <td>Dirty Diapers</td>
+                <td>{{dailySummary.numberOfDirtyDiapers}} of {{dailySummary.expectedNumberOfDirtyDiapers}}</td>
+            </tr>
+            <tr class="evenRow">
+                <td>Feedings</td>
+                <td>{{dailySummary.numberOfFeedings}} of {{dailySummary.expectedNumberOfFeedings}}</td>
+            </tr>
+            <tr class="oddRow">
+                <td>Average Feeding Time</td>
+                <td>{{dailySummary.averageTimePerFeeding}} minutes</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Diaper Details</h3>
+    <table id="diaperRecordsTable" class="table" ts-wrapper>
+        <thead>
+            <tr>
+                <th ts-criteria="affectedDateTime" ts-default="descending">Date</th>
+                <th ts-criteria="isWet">Is Wet?</th>
+                <th ts-criteria="isDirty">Is Dirty?</th>
+                <th ts-criteria="color">Color</th>
+                <th ts-criteria="consistency">Consistency</th>
+                <th ts-criteria="comment">Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="diaper in dailySummary.diapers" ng-class="$even ? 'oddRow' : 'evenRow'" ts-repeat>
+                <td>{{diaper.affectedDateTime | date:'MM/dd HH:mm' }}</td>
+                <td>{{diaper.isWet | checkmark}}</td>
+                <td>{{diaper.isDirty | checkmark}}</td>
+                <td>{{diaper.color}}</td>
+                <td>{{diaper.consistency}}</td>
+                <td>{{diaper.comment}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Feeding Details</h3>
+    <table id="feedingRecordsTable" class="table" ts-wrapper>
+        <thead>
+            <tr>
+                <th ts-criteria="overallStartDate" ts-default="descending">Session Start</th>
+                <th ts-criteria="overallEndDate">Session End</th>
+                <th ts-criteria="overallLength">Feeding Length</th>
+                <th ts-criteria="startDateLeft">Start Left</th>
+                <th ts-criteria="lengthInMinutesLeft">Left Length</th>
+                <th ts-criteria="startDateRight">Start Right</th>
+                <th ts-criteria="lengthInMinutesRight">Right Length</th>
+                <th ts-criteria="comment">Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="feeding in dailySummary.feedings" ng-class="$even ? 'oddRow' : 'evenRow'" ts-repeat>
+                <td>{{feeding.overallStartDate | date:'MM/dd HH:mm' }}</td>
+                <td>{{feeding.overallEndDate | date:'MM/dd HH:mm' }}</td>
+                <td>{{feeding.overallLength}}</td>
+                <td>{{feeding.startDateLeft | date:'MM/dd HH:mm' }}</td>
+                <td>{{feeding.lengthInMinutesLeft}}</td>
+                <td>{{feeding.startDateRight | date:'MM/dd HH:mm' }}</td>
+                <td>{{feeding.lengthInMinutesRight}}</td>
+                <td>{{feeding.comment}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div script-loader pagename="dailySummary"></div>
+<toastr-watcher></toastr-watcher>

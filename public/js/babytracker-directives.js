@@ -45,6 +45,13 @@ babyTrackerDirectives.directive('scriptLoader', function() {
                     break;
                 }
 
+                case 'dailySummary':
+                {
+                    initializeOnControllerLoad(dailySummarySectionLinkId, false);
+                    scope.buildDailySummary();
+                    break;
+                }
+
                 default:
                 {
                     initializeOnControllerLoad(actionsSectionLinkId, false);

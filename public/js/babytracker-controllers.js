@@ -21,6 +21,9 @@ babyTrackerControllers.controller('BabyController', [
         $scope.allFeedingRecords = [];
         $scope.lastUsedBoob = '';
 
+        $scope.showDateChanger = false;
+        $scope.dateToChange = new Date();
+
         $scope.poopColors = ['Black', 'Green', 'Brown', 'Yellow'];
         $scope.poopConsistencies = ['Thick', 'Solid', 'Watery', 'Seedy'];
         $scope.selectedPoopColor = '';
@@ -30,6 +33,11 @@ babyTrackerControllers.controller('BabyController', [
         $scope.currentDiaper.affectedDateTime = new Date();
 
         $scope.currentFeeding = {};
+
+        $scope.dailySummary = {};
+        $scope.dailySummary.expectedNumberOfWetDiapers = 6;
+        $scope.dailySummary.expectedNumberOfDirtyDiapers = 4;
+        $scope.dailySummary.expectedNumberOfFeedings = 10;
 
         if ($stateParams.diaperId) {
             $scope.isRecordEdit = true;
@@ -71,6 +79,10 @@ babyTrackerControllers.controller('BabyController', [
             });
         }
 
+        $scope.enableShowDateChanger = function() {
+            $scope.showDateChanger = true;
+        };
+
         $scope.loadDiaperDetails = function() {
             diapers.loadAll(function(status, err, diapers) {
                 if (!status) {
@@ -94,8 +106,94 @@ babyTrackerControllers.controller('BabyController', [
             });
         };
 
+        $scope.changeDate = function() {
+            if (isNullOrUndefined($scope.dateToChange) || $scope.dateToChange === '') {
+                $scope.errorMessage = 'You must enter a valid date';
+                return;
+            }
+
+            $scope.buildDailySummary($scope.dateToChange);
+            $scope.showDateChanger = false;
+            $scope.errorMessage = '';
+        };
+
+        $scope.buildDailySummary = function(dateToLoad) {
+            var allDiapers = [];
+            var allFeedings = [];
+            var dirtyDiapers = 0;
+            var wetDiapers = 0;
+
+            if (isNullOrUndefined(dateToLoad)) {
+                dateToLoad = new Date();
+            }
+
+            diapers.loadAll(function(status, err, diapers) {
+                if (!status) {
+                    $scope.userMessage = { type: 'error', title: 'Diaper Records', message: 'Error loading diaper records: ' + err, nextState: 'NONE'};
+                }
+                else {
+                    allDiapers = diapers;
+                    feedings.loadAll(function(status, err, feedings) {
+                        if (!status) {
+                            $scope.userMessage = { type: 'error', title: 'Feeding Records', message: 'Error loading feeding records: ' + err, nextState: 'NONE'};
+                        }
+                        else {
+                            allFeedings = feedings.data;
+                            $scope.dailySummary.mostRecentBoob = feedings.lastUsedBoob;
+
+                            var todaysDiapers = [];
+                            var dateToLoadString = moment(dateToLoad).format("MM/DD/YYYY");
+                            $scope.dailySummary.loadedDate = dateToLoadString;
+
+                            allDiapers.forEach(function(diaper) {
+                                var diaperDate = new Date(diaper.affectedDateTime);
+                                var diaperDateString = moment(diaperDate).format("MM/DD/YYYY");
+
+                                if (diaperDateString === dateToLoadString) {
+                                    todaysDiapers.push(diaper);
+
+                                    if (diaper.isWet) {
+                                        wetDiapers++;
+                                    }
+
+                                    if (diaper.isDirty) {
+                                        dirtyDiapers++;
+                                    }
+                                }
+                            });
+
+                            $scope.dailySummary.diapers = todaysDiapers;
+                            $scope.dailySummary.numberOfWetDiapers = wetDiapers;
+                            $scope.dailySummary.numberOfDirtyDiapers = dirtyDiapers;
+
+                            var totalFeedingLength = 0;
+
+                            var todaysFeedings = [];
+                            allFeedings.forEach(function(feeding) {
+                                var feedingStartDate = new Date(feeding.overallStartDate);
+                                var feedingEndDate = new Date(feeding.overallEndDate);
+
+                                var feedingStartDateString = moment(feedingStartDate).format("MM/DD/YYYY");
+                                var feedingEndDateString = moment(feedingEndDate).format("MM/DD/YYYY");
+
+                                if (feedingStartDateString === dateToLoadString || feedingEndDateString === dateToLoadString) {
+                                    todaysFeedings.push(feeding);
+                                    totalFeedingLength += feeding.overallLength;
+                                }
+                            });
+
+                            $scope.dailySummary.feedings = todaysFeedings;
+                            $scope.dailySummary.numberOfFeedings = todaysFeedings.length;
+                            $scope.dailySummary.averageTimePerFeeding = Math.round(totalFeedingLength / todaysFeedings.length);
+
+                            // TODO: JUSTIN: FUTURE: FIGURE OUT AVERAGE TIME BETWEEN FEEDINGS??
+                        }
+                    });
+                }
+            });
+        };
+
         $scope.saveManualFeedingRecord = function() {
-            console.log($scope.currentFeeding);
             var isLeftDefined = (!isNullOrUndefined($scope.currentFeeding.startDateLeft) && $scope.currentFeeding.startDateLeft !== '') && (!isNullOrUndefined($scope.currentFeeding.lengthInMinutesLeft) && $scope.currentFeeding.lengthInMinutesLeft !== '');
             var isRightDefined = (!isNullOrUndefined($scope.currentFeeding.startDateRight) && $scope.currentFeeding.startDateRight !== '') && (!isNullOrUndefined($scope.currentFeeding.lengthInMinutesRight) && $scope.currentFeeding.lengthInMinutesRight !== '');
 

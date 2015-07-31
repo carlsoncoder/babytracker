@@ -32,7 +32,6 @@ router.post('/deletediaper', auth, function(req, res, next) {
 router.post('/savediaper', auth, function(req, res, next) {
     diaperRepository.save(req.payload._id, req.body.diaper, function(err) {
         if (err) {
-            console.log(err);
             return res.status(500).json(err);
         }
 
