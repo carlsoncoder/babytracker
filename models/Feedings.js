@@ -31,4 +31,80 @@ FeedingSchema.pre('validate', function(next) {
     }
 });
 
+FeedingSchema.post('init', function(feeding) {
+    feeding.lengthInMinutesLeft = Math.round(feeding.lengthInMinutesLeft);
+    feeding.lengthInMinutesRight = Math.round(feeding.lengthInMinutesRight);
+
+    if (feeding.lengthInMinutesLeft === 0) {
+        feeding.lengthInMinutesLeft = null;
+    }
+
+    if (feeding.lengthInMinutesRight === 0) {
+        feeding.lengthInMinutesRight = null;
+    }
+});
+
+FeedingSchema.virtual('overallStartDate').get(function() {
+    return getComparedDate(this.startDateLeft, this.startDateRight, true, -1, -1);
+});
+
+FeedingSchema.virtual('overallEndDate').get(function() {
+    return getComparedDate(this.startDateLeft, this.startDateRight, false, this.lengthInMinutesLeft, this.lengthInMinutesRight);
+});
+
+FeedingSchema.virtual('overallLength').get(function() {
+    var leftLength = this.lengthInMinutesLeft === null ? 0 : this.lengthInMinutesLeft;
+    var rightLength = this.lengthInMinutesRight === null ? 0 : this.lengthInMinutesRight;
+    return Math.round(leftLength + rightLength);
+});
+
+function getComparedDate(dateOne, dateTwo, isEarliest, dateOneMinutes, dateTwoMinutes) {
+    var dateOneUndefined = typeof(dateOne) === null || typeof(dateOne) === undefined || dateOne === '' || dateOne === null;
+    var dateTwoUndefined = typeof(dateTwo) === null || typeof(dateTwo) === undefined || dateTwo === '' || dateTwo === null;
+
+    if (dateOneUndefined && dateTwoUndefined) {
+        return null;
+    }
+
+    dateOne = new Date(dateOne);
+    dateTwo = new Date(dateTwo);
+
+    if (isEarliest) {
+        if (dateOneUndefined && !dateTwoUndefined) {
+            return dateTwo;
+        }
+        else if (dateTwoUndefined && !dateOneUndefined) {
+            return dateOne;
+        }
+        else if (dateOne > dateTwo) {
+            return dateTwo;
+        }
+        else {
+            return dateOne;
+        }
+    }
+    else {
+        var newDate;
+        if (dateOneUndefined && !dateTwoUndefined) {
+            newDate = new Date(dateTwo.getTime() + (dateTwoMinutes * 60000));
+            return newDate;
+        }
+        else if (dateTwoUndefined && !dateOneUndefined) {
+            newDate = new Date(dateOne.getTime() + (dateOneMinutes * 60000));
+            return newDate;
+        }
+        else if (dateOne > dateTwo) {
+            newDate = new Date(dateOne.getTime() + (dateOneMinutes * 60000));
+            return newDate;
+        }
+        else {
+            newDate = new Date(dateTwo.getTime() + (dateTwoMinutes * 60000));
+            return newDate;
+        }
+    }
+}
+
+FeedingSchema.set('toJSON', { getters: true, virtuals: true });
+FeedingSchema.set('toObject', { getters: true, virtuals: true });
+
 mongoose.model('Feeding', FeedingSchema);

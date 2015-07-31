@@ -1,7 +1,5 @@
 var babyTrackerControllers = angular.module('babytracker.controllers', []);
 
-// BabyController is the name
-
 babyTrackerControllers.controller('BabyController', [
     '$scope',
     '$rootScope',
@@ -9,9 +7,9 @@ babyTrackerControllers.controller('BabyController', [
     '$stateParams',
     'diapers',
     'feedings',
+    'dailysummary',
     'auth',
-    function($scope, $rootScope, $state, $stateParams, diapers, feedings, auth) {
-
+    function($scope, $rootScope, $state, $stateParams, diapers, feedings, dailysummary, auth) {
         $scope.$state = $state;
         $scope.isLoggedIn = auth.isLoggedIn;
         $scope.isRecordEdit = false;
@@ -35,9 +33,6 @@ babyTrackerControllers.controller('BabyController', [
         $scope.currentFeeding = {};
 
         $scope.dailySummary = {};
-        $scope.dailySummary.expectedNumberOfWetDiapers = 6;
-        $scope.dailySummary.expectedNumberOfDirtyDiapers = 4;
-        $scope.dailySummary.expectedNumberOfFeedings = 10;
 
         if ($stateParams.diaperId) {
             $scope.isRecordEdit = true;
@@ -70,8 +65,15 @@ babyTrackerControllers.controller('BabyController', [
                     for (var i = 0; i < feedings.data.length; i++) {
                         if (feedings.data[i]._id === $stateParams.feedingId) {
                             $scope.currentFeeding = feedings.data[i];
-                            $scope.currentFeeding.startDateLeft = new Date($scope.currentFeeding.startDateLeft);
-                            $scope.currentFeeding.startDateRight = new Date($scope.currentFeeding.startDateRight);
+
+                            if (!isNullOrUndefined($scope.currentFeeding.startDateLeft)) {
+                                $scope.currentFeeding.startDateLeft = new Date($scope.currentFeeding.startDateLeft);
+                            }
+
+                            if (!isNullOrUndefined($scope.currentFeeding.startDateRight)) {
+                                $scope.currentFeeding.startDateRight = new Date($scope.currentFeeding.startDateRight);
+                            }
+
                             break;
                         }
                     }
@@ -118,77 +120,12 @@ babyTrackerControllers.controller('BabyController', [
         };
 
         $scope.buildDailySummary = function(dateToLoad) {
-            var allDiapers = [];
-            var allFeedings = [];
-            var dirtyDiapers = 0;
-            var wetDiapers = 0;
-
-            if (isNullOrUndefined(dateToLoad)) {
-                dateToLoad = new Date();
-            }
-
-            diapers.loadAll(function(status, err, diapers) {
-                if (!status) {
-                    $scope.userMessage = { type: 'error', title: 'Diaper Records', message: 'Error loading diaper records: ' + err, nextState: 'NONE'};
+            dailysummary.loadDailySummary(dateToLoad, function(err, dailySummary) {
+                if (err) {
+                    $scope.errorMessage = 'Error loading daily summary: ' + err;
                 }
                 else {
-                    allDiapers = diapers;
-                    feedings.loadAll(function(status, err, feedings) {
-                        if (!status) {
-                            $scope.userMessage = { type: 'error', title: 'Feeding Records', message: 'Error loading feeding records: ' + err, nextState: 'NONE'};
-                        }
-                        else {
-                            allFeedings = feedings.data;
-                            $scope.dailySummary.mostRecentBoob = feedings.lastUsedBoob;
-
-                            var todaysDiapers = [];
-                            var dateToLoadString = moment(dateToLoad).format("MM/DD/YYYY");
-                            $scope.dailySummary.loadedDate = dateToLoadString;
-
-                            allDiapers.forEach(function(diaper) {
-                                var diaperDate = new Date(diaper.affectedDateTime);
-                                var diaperDateString = moment(diaperDate).format("MM/DD/YYYY");
-
-                                if (diaperDateString === dateToLoadString) {
-                                    todaysDiapers.push(diaper);
-
-                                    if (diaper.isWet) {
-                                        wetDiapers++;
-                                    }
-
-                                    if (diaper.isDirty) {
-                                        dirtyDiapers++;
-                                    }
-                                }
-                            });
-
-                            $scope.dailySummary.diapers = todaysDiapers;
-                            $scope.dailySummary.numberOfWetDiapers = wetDiapers;
-                            $scope.dailySummary.numberOfDirtyDiapers = dirtyDiapers;
-
-                            var totalFeedingLength = 0;
-
-                            var todaysFeedings = [];
-                            allFeedings.forEach(function(feeding) {
-                                var feedingStartDate = new Date(feeding.overallStartDate);
-                                var feedingEndDate = new Date(feeding.overallEndDate);
-
-                                var feedingStartDateString = moment(feedingStartDate).format("MM/DD/YYYY");
-                                var feedingEndDateString = moment(feedingEndDate).format("MM/DD/YYYY");
-
-                                if (feedingStartDateString === dateToLoadString || feedingEndDateString === dateToLoadString) {
-                                    todaysFeedings.push(feeding);
-                                    totalFeedingLength += feeding.overallLength;
-                                }
-                            });
-
-                            $scope.dailySummary.feedings = todaysFeedings;
-                            $scope.dailySummary.numberOfFeedings = todaysFeedings.length;
-                            $scope.dailySummary.averageTimePerFeeding = Math.round(totalFeedingLength / todaysFeedings.length);
-
-                            // TODO: JUSTIN: FUTURE: FIGURE OUT AVERAGE TIME BETWEEN FEEDINGS??
-                        }
-                    });
+                    $scope.dailySummary = dailySummary;
                 }
             });
         };

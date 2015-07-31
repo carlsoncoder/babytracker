@@ -63,9 +63,6 @@ babyTrackerFactories.factory('feedings', ['$http', function($http) {
                 else {
                     var latestFeedingRecord = null;
                     data.forEach(function(feeding) {
-                        feeding.overallStartDate = getComparedDate(feeding.startDateLeft, feeding.startDateRight, true, -1, -1);
-                        feeding.overallEndDate = getComparedDate(feeding.startDateLeft, feeding.startDateRight, false, feeding.lengthInMinutesLeft, feeding.lengthInMinutesRight);
-
                         if (latestFeedingRecord === null) {
                             latestFeedingRecord = feeding;
                         }
@@ -75,21 +72,6 @@ babyTrackerFactories.factory('feedings', ['$http', function($http) {
                                 latestFeedingRecord = feeding;
                             }
                         }
-
-                        var leftLength = isNullOrUndefined(feeding.lengthInMinutesLeft) ? 0 : feeding.lengthInMinutesLeft;
-                        var rightLength = isNullOrUndefined(feeding.lengthInMinutesRight) ? 0 : feeding.lengthInMinutesRight;
-                        feeding.overallLength = Math.round(leftLength + rightLength);
-
-                        feeding.lengthInMinutesLeft = Math.round(feeding.lengthInMinutesLeft);
-                        feeding.lengthInMinutesRight = Math.round(feeding.lengthInMinutesRight);
-
-                        if (feeding.lengthInMinutesLeft === 0) {
-                            feeding.lengthInMinutesLeft = null;
-                        }
-
-                        if (feeding.lengthInMinutesRight === 0) {
-                            feeding.lengthInMinutesRight = null;
-                        }
                     });
 
                     var returnValue = {};
@@ -98,10 +80,10 @@ babyTrackerFactories.factory('feedings', ['$http', function($http) {
                     // latestFeedingRecord will give us the last used boob, if possible
                     returnValue.lastUsedBoob = 'Unknown';
                     if (latestFeedingRecord !== null) {
-                        if (latestFeedingRecord.lengthInMinutesLeft === null || latestFeedingRecord.lengthInMinutesLeft === 0) {
+                        if (isNullOrUndefined(latestFeedingRecord.lengthInMinutesLeft) || latestFeedingRecord.lengthInMinutesLeft === 0) {
                             returnValue.lastUsedBoob = 'Right';
                         }
-                        else if (latestFeedingRecord.lengthInMinutesRight === null || latestFeedingRecord.lengthInMinutesRight === 0) {
+                        else if (isNullOrUndefined(latestFeedingRecord.lengthInMinutesRight) || latestFeedingRecord.lengthInMinutesRight === 0) {
                             returnValue.lastUsedBoob = 'Left';
                         }
                         else {
@@ -156,53 +138,143 @@ babyTrackerFactories.factory('feedings', ['$http', function($http) {
             });
     };
 
-    function getComparedDate(dateOne, dateTwo, isEarliest, dateOneMinutes, dateTwoMinutes) {
-        var dateOneUndefined = typeof(dateOne) === null || typeof(dateOne) === undefined || dateOne === '' || dateOne === null;
-        var dateTwoUndefined = typeof(dateTwo) === null || typeof(dateTwo) === undefined || dateTwo === '' || dateTwo === null;
-
-        if (dateOneUndefined && dateTwoUndefined) {
-            return null;
-        }
-
-        dateOne = new Date(dateOne);
-        dateTwo = new Date(dateTwo);
-
-        if (isEarliest) {
-            if (dateOneUndefined && !dateTwoUndefined) {
-                return dateTwo;
-            }
-            else if (dateTwoUndefined && !dateOneUndefined) {
-                return dateOne;
-            }
-            else if (dateOne > dateTwo) {
-                return dateTwo;
-            }
-            else {
-                return dateOne;
-            }
-        }
-        else {
-            var newDate;
-            if (dateOneUndefined && !dateTwoUndefined) {
-                newDate = new Date(dateTwo.getTime() + (dateTwoMinutes * 60000));
-                return newDate;
-            }
-            else if (dateTwoUndefined && !dateOneUndefined) {
-                newDate = new Date(dateOne.getTime() + (dateOneMinutes * 60000));
-                return newDate;
-            }
-            else if (dateOne > dateTwo) {
-                newDate = new Date(dateOne.getTime() + (dateOneMinutes * 60000));
-                return newDate;
-            }
-            else {
-                newDate = new Date(dateTwo.getTime() + (dateTwoMinutes * 60000));
-                return newDate;
-            }
-        }
-    }
-
     return feedingsFactory;
+}]);
+
+babyTrackerFactories.factory('dailysummary', ['$http', 'diapers', 'feedings', function($http, diapers, feedings) {
+    var dailySummaryFactory = {};
+
+    dailySummaryFactory.loadDailySummary = function(dateToLoad, callback) {
+        var dailySummary = {};
+
+        dailySummary.expectedNumberOfWetDiapers = 6;
+        dailySummary.expectedNumberOfDirtyDiapers = 4;
+        dailySummary.expectedNumberOfFeedings = 10;
+
+        var allDiapers = [];
+        var allFeedings = [];
+        var dirtyDiapers = 0;
+        var wetDiapers = 0;
+
+        if (isNullOrUndefined(dateToLoad)) {
+            dateToLoad = new Date();
+        }
+
+        diapers.loadAll(function(status, err, diapers) {
+            if (!status) {
+                callback(err);
+            }
+            else {
+                allDiapers = diapers;
+                feedings.loadAll(function(status, err, feedings) {
+                    if (!status) {
+                        callback(err);
+                    }
+                    else {
+                        allFeedings = feedings.data;
+                        dailySummary.mostRecentBoob = feedings.lastUsedBoob;
+
+                        var todaysDiapers = [];
+                        var dateToLoadString = moment(dateToLoad).format("MM/DD/YYYY");
+                        dailySummary.loadedDate = dateToLoadString;
+
+                        allDiapers.forEach(function(diaper) {
+                            var diaperDate = new Date(diaper.affectedDateTime);
+                            var diaperDateString = moment(diaperDate).format("MM/DD/YYYY");
+
+                            if (diaperDateString === dateToLoadString) {
+                                todaysDiapers.push(diaper);
+
+                                if (diaper.isWet) {
+                                    wetDiapers++;
+                                }
+
+                                if (diaper.isDirty) {
+                                    dirtyDiapers++;
+                                }
+                            }
+                        });
+
+                        dailySummary.diapers = todaysDiapers;
+                        dailySummary.numberOfWetDiapers = wetDiapers;
+                        dailySummary.numberOfDirtyDiapers = dirtyDiapers;
+
+                        var totalFeedingLength = 0;
+
+                        var todaysFeedings = [];
+                        allFeedings.forEach(function(feeding) {
+                            feeding.overallStartDate = new Date(feeding.overallStartDate);
+                            feeding.overallEndDate = new Date(feeding.overallEndDate);
+
+                            var feedingStartDateString = moment(feeding.overallStartDate).format("MM/DD/YYYY");
+                            var feedingEndDateString = moment(feeding.overallEndDate).format("MM/DD/YYYY");
+
+                            if (feedingStartDateString === dateToLoadString || feedingEndDateString === dateToLoadString) {
+                                todaysFeedings.push(feeding);
+                                totalFeedingLength += feeding.overallLength;
+                            }
+                        });
+
+                        // sort by earliest first for average time between feedings calculations
+                        todaysFeedings.sort(function(first, second) {
+                            return first.overallStartDate == second.overallStartDate ? 0
+                                : +(first.overallStartDate > second.overallStartDate) || -1;
+                        });
+
+                        var minutesBetweenFeedings = [];
+                        var overallTotalMinutesBetweenFeedings = 0;
+                        var lastStartTime = null;
+                        if (todaysFeedings.length > 1) {
+                            for (var i = 0; i < todaysFeedings.length; i++) {
+                                if (lastStartTime === null) {
+                                    // first time through the loop
+                                    lastStartTime = todaysFeedings[i].overallStartDate;
+                                }
+                                else {
+                                    // get difference between this start time, and last start time
+                                    var minutesSinceLast = Math.round((todaysFeedings[i].overallStartDate - lastStartTime) / 1000 / 60);
+                                    overallTotalMinutesBetweenFeedings += minutesSinceLast;
+                                    minutesBetweenFeedings.push(minutesSinceLast);
+
+                                    // reset last start time
+                                    lastStartTime = todaysFeedings[i].overallStartDate;
+                                }
+                            }
+
+                            var totalMinutes = Math.round(overallTotalMinutesBetweenFeedings / minutesBetweenFeedings.length);
+                            var hours = Math.floor(totalMinutes / 60);
+                            var minutes = (totalMinutes - (hours * 60));
+
+                            if (hours.toString().length == 1) {
+                                hours = '0' + hours.toString();
+                            }
+
+                            if (minutes.toString().length == 1) {
+                                minutes = '0' + minutes.toString();
+                            }
+
+                            dailySummary.averageTimeBetweenFeedings = hours + ':' + minutes;
+                        }
+                        else{
+                            dailySummary.averageTimeBetweenFeedings = 'N/A';
+                        }
+
+                        dailySummary.feedings = todaysFeedings;
+                        dailySummary.numberOfFeedings = todaysFeedings.length;
+
+                        dailySummary.averageTimePerFeeding = 0;
+                        if (totalFeedingLength > 0 && todaysFeedings.length > 0) {
+                            dailySummary.averageTimePerFeeding = Math.round(totalFeedingLength / todaysFeedings.length);
+                        }
+
+                        return callback(null, dailySummary);
+                    }
+                });
+            }
+        });
+    };
+
+    return dailySummaryFactory;
 }]);
 
 babyTrackerFactories.factory('auth', ['$http', '$window', function($http, $window) {
